@@ -21,7 +21,6 @@ function Show-Menu {
     Write-Host "3. Cai dat Scoop" -ForegroundColor Yellow
     Write-Host "4. Cai dat DEV tools (git, docker, ripgrep, mise)" -ForegroundColor Yellow
     Write-Host "5. Cai dat Windows Apps (Chrome, VSCode, 7zip, etc.)" -ForegroundColor Yellow
-    Write-Host "6. Cai dat Build Tools (Visual Studio, .NET SDK)" -ForegroundColor Yellow
     Write-Host "7. Cau hinh Git" -ForegroundColor Yellow
     Write-Host "8. Cai dat TAT CA" -ForegroundColor Green
     Write-Host "9. Kich hoat Windows" -ForegroundColor Green
@@ -127,43 +126,6 @@ function Install-WindowsApps {
     }
 }
 
-function Install-BuildTools {
-    Write-Host "`n=== 6. CAI DAT BUILD TOOLS ===" -ForegroundColor Green
-    if (!(Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey chua duoc cai dat. Vui long cai dat Chocolatey truoc!" -ForegroundColor Red
-        return
-    }
-    
-    $buildTools = @(
-        "visualstudio2022buildtools",
-        "dotnet-sdk",
-        "windows-sdk-10"
-    )
-    
-    Write-Host "Installing build tools (this may take a while)..." -ForegroundColor Yellow
-    foreach ($tool in $buildTools) {
-        Write-Host "Installing $tool..." -ForegroundColor Cyan
-        $retryCount = 3
-        $retryDelay = 5
-        $success = $false
-        
-        for ($i = 1; $i -le $retryCount; $i++) {
-            try {
-                choco install $tool -y
-                $success = $true
-                break
-            } catch {
-                if ($i -lt $retryCount) {
-                    Write-Host "Retry $i/$retryCount after $retryDelay seconds..." -ForegroundColor Yellow
-                    Start-Sleep -Seconds $retryDelay
-                } else {
-                    Write-Host "Failed to install $tool after $retryCount attempts" -ForegroundColor Red
-                }
-            }
-        }
-    }
-}
-
 function Configure-Git {
     Write-Host "`n=== 7. CAU HINH GIT ===" -ForegroundColor Green
     if (!(Get-Command git -ErrorAction SilentlyContinue)) {
@@ -247,7 +209,6 @@ function Install-All {
     Install-Scoop
     Install-DevTools
     Install-WindowsApps
-    Install-BuildTools
     Configure-Git
     Write-Host "`n=== SETUP COMPLETE ===" -ForegroundColor Cyan
 }
@@ -265,7 +226,6 @@ do {
         "3" { Install-Scoop }
         "4" { Install-DevTools }
         "5" { Install-WindowsApps }
-        "6" { Install-BuildTools }
         "7" { Configure-Git }
         "8" { Install-All }
         "9" { Activate-Windows }
